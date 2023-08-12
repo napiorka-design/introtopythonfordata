@@ -1,0 +1,21 @@
+import csv
+
+# Open the input CSV file in text mode for reading
+#use sale_dataset.csv file for testing
+# Note that this code assumes that the CSV file uses commas as the delimiter.
+# If your CSV file uses a different delimiter, you can specify it using the 
+# delimiter parameter when creating the csv.reader and csv.writer objects.
+#This code snippet reads the original CSV file, 
+# removes blank spaces from each cell in the file using the strip() method,
+# and writes the cleaned data into new_file.txt
+with open('sales_dataset.csv', 'r') as input_file:
+    # Open the output file in text mode for writing
+    with open('new_file.txt', 'w', newline='') as output_file:
+        writer = csv.writer(output_file)
+        # Iterate through each row in the input CSV file
+        for row in csv.reader(input_file):
+            # Check if any field in the row has non-whitespace characters
+            if any(field.strip() for field in row):
+                # Write the row to the output file
+                writer.writerow(row)
+                

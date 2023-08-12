@@ -1,0 +1,208 @@
+#### CFG Mooc Intro to Python for Data
+#### Coding by @Anna Napiórkowska
+
+### TASK 1a. Use Pandas Library
+
+# Import required libraries
+import pandas as pd
+
+import matplotlib.pyplot as plt
+
+import numpy as np
+
+### TASK 1b. Read in the sales data from the CSV file provided in the “student materials” folder on Slack (sales_dataset.csv)
+
+# Load the CSV file into a Pandas DataFrame
+
+sales_df = pd.read_csv('sales.csv')
+print(sales_df)
+
+### TASK 2. Calculate the total sales for each product 
+
+# Add a new column for total sales and calculate the total sales for each product
+sales_df['Total Sales'] = sales_df['Sale Price'] * sales_df['Quantity Sold']
+
+# Group the data by product name 
+product_sales = sales_df.groupby('Product Name')['Total Sales'].sum()
+
+# Print the results
+print("The total sales for each product is: ")
+print(product_sales)
+
+### TASK 3. Determine the average sale price for each product category 
+
+# group the DataFrame by the 'Category' column and calculate the average sale price
+avg_sales_df = sales_df.groupby('Category')['Sale Price'].mean()
+
+# print the resulting DataFrame with the average sale price for each product category
+print("The average sale price for each product category is: ")
+print(avg_sales_df)
+
+### TASK 4. Identify the month with the highest sales and the month with the lowest sales
+
+# Group the sales data by month and calculate the total sales for each month
+monthly_sales = sales_df.groupby('Month')['Total Sales'].sum()
+
+# Get the month with the highest total sales
+month_with_highest_sales = monthly_sales.idxmax()
+
+# Get the month with the lowest total sales
+month_with_lowest_sales = monthly_sales.idxmin()
+
+print("Month with the highest sales: ", month_with_highest_sales)
+print("Month with the lowest sales: ", month_with_lowest_sales)
+
+
+### TASK 5. Determine which customers made the most purchases and how much they spent in total
+
+# group by customer name and sum the sale price and quantity sold columns
+customer_sales = sales_df.groupby('Customer Name').agg({'Total Sales': 'sum', 'Quantity Sold': 'sum'})
+
+# sort the customers by their total sales in descending order
+customer_sales = customer_sales.sort_values(by='Quantity Sold', ascending=False)
+
+# print the top 5 customers and their total sales
+print('List of Customers by the Number of Purchases:')
+print(customer_sales.head(25))
+
+### TASK 6. Write the results of your analysis as a CSV file
+
+# Save the total sales for each product as a CSV file
+product_sales.to_csv('product_sales.csv')
+
+# Save the customer sales data as a CSV file
+customer_sales.to_csv('customer_sales.csv')
+
+# Save the monthly sales data as a CSV file
+monthly_sales.to_csv('monthly_sales.csv')
+
+# Save the average product category sales data as a CSV file
+avg_sales_df.to_csv('avg_sales_df.csv')
+
+# Read the individual CSV files
+product_sales = pd.read_csv('product_sales.csv')
+customer_sales = pd.read_csv('customer_sales.csv')
+monthly_sales = pd.read_csv('monthly_sales.csv')
+avg_sales_df = pd.read_csv('avg_sales_df.csv')
+
+# Concatenate the dataframes vertically (row-wise)
+result = pd.concat([product_sales, customer_sales, monthly_sales, avg_sales_df], axis=0)
+
+# Save the concatenated data as a CSV file
+result.to_csv('results_file.csv', index=False)
+
+### TASK 8. Calculate additional metrics (e.g. median sale price, standard deviation of sale prices)
+
+best_seller_products = sales_df.groupby('Product Name')['Quantity Sold'].sum().nlargest(5)
+print(best_seller_products)
+
+std_sale_price = sales_df['Sale Price'].std()
+
+print("Standard Deviation of Sale Prices:", std_sale_price)
+
+median_sale_price = sales_df['Sale Price'].median()
+
+print("Median Sale Price:", median_sale_price)
+
+### TASK 7. Use Matplotlib or Seaborn to create detailed graphs of the sales data
+
+#Create a bar chart for monthly sales 
+# Create a dictionary to map month names to their corresponding values
+month_values = {'January': 1, 'February': 2, 'March': 3, 'April': 4, 'May': 5, 'June': 6,
+                'July': 7, 'August': 8, 'September': 9, 'October': 10, 'November': 11, 'December': 12}
+
+# Map the month names to their corresponding values
+sales_df['Month'] = sales_df['Month'].map(month_values)
+
+# Group the data by month and calculate the total sales for each month
+monthly_sales = sales_df.groupby('Month')['Total Sales'].sum()
+
+# Create a bar chart for monthly sales
+plt.figure(figsize=(8, 6))
+plt.bar(monthly_sales.index, monthly_sales.values)
+plt.xlabel('Month')
+plt.ylabel('Total Sales')
+plt.title('Monthly Sales')
+
+# Update the x-axis labels with month names
+month_names = ['January', 'February', 'March', 'April', 'May', 'June',
+              'July', 'August', 'September', 'October', 'November', 'December']
+
+# Update the x-axis labels with month names
+plt.xticks(list(month_values.values()),month_names, rotation=45)
+#display the chart on the screen
+plt.show()
+
+# Create a line chart of the monthly sales
+plt.figure(figsize=(10, 6))
+plt.plot(monthly_sales.index, monthly_sales.values, color='green', marker='o')
+plt.xlabel('Month')
+plt.ylabel('Total Sales')
+plt.title('Monthly Sales')
+plt.xticks(list(month_values.values()), month_names, rotation=45)
+plt.show()
+
+
+#Create a bar chart for best selling products
+best_seller_products = sales_df.groupby('Product Name')['Quantity Sold'].sum().nlargest(5)
+print(best_seller_products)
+
+# Create a bar chart with data from `best_seller_products`
+plt.bar(best_seller_products.index, best_seller_products.values)
+
+# Set the title of the chart
+plt.title('Top 5 Best Seller Products')
+
+# Set the x-axis and y-axis labels
+plt.xlabel('Product Name')
+plt.ylabel('Quantity Sold')
+
+# Set font size for x-axis and y-axis labels
+plt.xlabel('Product Name', fontsize=10)
+plt.ylabel('Quantity Sold', fontsize=10)
+
+# Set font size for title
+plt.title('Top 5 Best Seller Products', fontsize=12)
+
+# Increase spacing between words on x-axis labels
+plt.xticks(rotation=45, ha='right')
+plt.subplots_adjust(bottom=0.15)
+
+# Show the chart
+plt.show()
+
+# Create a pie chart of the monthly sales
+plt.figure(figsize=(10, 6))
+colors = plt.cm.tab20c.colors  # Get a list of distinct colors from the color map
+plt.pie(monthly_sales.values, autopct='%1.1f%%', startangle=90, colors=colors)
+plt.title('Monthly Sales Distribution')
+plt.legend(month_names,loc='center left', bbox_to_anchor=(1, 0.5))  # This line adds the month names as labels
+plt.show()
+
+
+# Create a bar chart for total sales per product
+plt.figure(figsize=(10, 8))
+
+# Define a custom color palette
+colors = plt.cm.Set3.colors
+
+# Create an array of positions for the bars
+positions = np.arange(len(product_sales))
+
+# Create the bar chart with custom colors
+bars = plt.barh(positions, product_sales.values, color=colors)
+plt.title('Total Sales per Product $')
+plt.xlabel('Total Sales $')
+plt.ylabel('Product Name')
+
+# Set y-axis tick labels to the product names
+plt.yticks(positions, product_sales.index)
+
+# Add data values on top of the bars
+for bar in bars:
+    xval = bar.get_width()
+    plt.text(xval, bar.get_y() + bar.get_height()/2, f"${xval:.2f}", va='center')
+
+plt.tight_layout()
+plt.show()
+
